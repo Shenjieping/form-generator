@@ -39,6 +39,7 @@ module.exports = {
     overlay: false
   },
   productionSourceMap: false,
+  lintOnSave: false,
   configureWebpack: {
     externals: {
       vue: 'Vue',

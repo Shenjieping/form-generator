@@ -573,12 +573,19 @@
               <span class="close-btn" @click="activeData.__config__.regList.splice(index, 1)">
                 <i class="el-icon-close" />
               </span>
-              <el-form-item label="表达式">
-                <el-input v-model="item.pattern" placeholder="请输入正则" />
-              </el-form-item>
-              <el-form-item label="错误提示" style="margin-bottom:0">
-                <el-input v-model="item.message" placeholder="请输入错误提示" />
-              </el-form-item>
+              <template v-if="item.validator == undefined">
+                <el-form-item label="表达式">
+                  <el-input v-model="item.pattern" placeholder="请输入正则" />
+                </el-form-item>
+                <el-form-item label="错误提示" style="margin-bottom:0">
+                  <el-input v-model="item.message" placeholder="请输入错误提示" />
+                </el-form-item>
+              </template>
+              <template v-else>
+                <el-form-item label="表达式" style="margin-bottom:0">
+                  <el-input v-model="item.validator" type="textarea" placeholder="请输入校验规则" />
+                </el-form-item>
+              </template>
             </div>
             <div style="margin-left: 20px">
               <el-button icon="el-icon-circle-plus-outline" type="text" @click="addReg">
@@ -657,6 +664,7 @@ import {
   inputComponents, selectComponents, layoutComponents
 } from '@/components/generator/config'
 import { saveFormConf } from '@/utils/db'
+import SvgIcon from '@/components/SvgIcon'
 
 const dateTimeFormat = {
   date: 'yyyy-MM-dd',
@@ -674,6 +682,7 @@ const needRerenderList = ['tinymce']
 
 export default {
   components: {
+    SvgIcon,
     TreeNodeDialog,
     IconsDialog
   },
@@ -832,6 +841,11 @@ export default {
         message: ''
       })
     },
+    addCustomReg() {
+      this.activeData.__config__.regList.push({
+        validator: '(rule, value, callback) => {}'
+      })
+    },
     addSelectItem() {
       this.activeData.__slot__.options.push({
         label: '',
@@ -980,9 +994,10 @@ export default {
   right: 0;
   top: 0;
   padding-top: 3px;
+  height: 100%;
   .field-box {
     position: relative;
-    height: calc(100vh - 42px);
+    height: calc(100% - 42px);
     box-sizing: border-box;
     overflow: hidden;
   }

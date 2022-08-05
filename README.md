@@ -1,4 +1,7 @@
 ![image](https://ae01.alicdn.com/kf/U51bfb661aba945b48a4c71774421d414C.gif)
+
+本仓库是基于 [form-generator](https://github.com/JakHuang/form-generator)改造后的代码
+
 ## 简介
 Element UI表单设计及代码生成器，可将生成的代码直接运行在基于Element的vue项目中；也可导出JSON表单，使用配套的解析器将JSON解析成真实的表单。 
 - 【[国内预览地址](https://mrhj.gitee.io/form-generator)】 【[国际预览地址](https://jakhuang.github.io/form-generator)】

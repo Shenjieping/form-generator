@@ -1,10 +1,13 @@
 <template>
-  <div class="container">
+  <div class="design-container">
     <div class="left-board">
       <div class="logo-wrapper">
         <div class="logo">
-          <img :src="logo" alt="logo"> Form Generator
-          <a class="github" href="https://github.com/JakHuang/form-generator" target="_blank">
+          <img :src="logo" alt="logo"> Form Design
+          <a class="github" href="https://github.com/JakHuang/form-generator" target="_blank" title="原始仓库">
+            <img src="https://github.githubassets.com/pinned-octocat.svg" alt>
+          </a>
+          <a class="github" href="https://github.com/Shenjieping/form-generator" target="_blank" title="修改后的仓库">
             <img src="https://github.githubassets.com/pinned-octocat.svg" alt>
           </a>
         </div>
@@ -107,7 +110,7 @@
     <json-drawer
       size="60%"
       :visible.sync="jsonDrawerVisible"
-      :json-str="JSON.stringify(formData)"
+      :json-str="JSON.stringify(formData, null, 2)"
       @refresh="refreshJson"
     />
     <code-type-dialog
@@ -148,6 +151,11 @@ import {
   getDrawingList, saveDrawingList, getIdGlobal, saveIdGlobal, getFormConf
 } from '@/utils/db'
 import loadBeautifier from '@/utils/loadBeautifier'
+import SvgIcon from '@/components/SvgIcon'
+
+const req = require.context('@/icons/svg', false, /\.svg$/)
+const requireAll = requireContext => requireContext.keys().map(requireContext)
+requireAll(req)
 
 let beautifier
 const emptyActiveData = { style: {}, autosize: {} }
@@ -159,6 +167,7 @@ const idGlobal = getIdGlobal()
 
 export default {
   components: {
+    SvgIcon,
     draggable,
     render,
     FormDrawer,
@@ -467,4 +476,11 @@ export default {
 
 <style lang='scss'>
 @import '@/styles/home';
+@import '@/styles/index.scss';
+.el-scrollbar__view {
+  height: 100%;
+}
+.center-board-row {
+  height: 100%;
+}
 </style>

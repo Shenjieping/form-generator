@@ -1,7 +1,7 @@
 $selectedColor: #f6f7ff;
 $lighterBlue: #409EFF;
 
-.container {
+.design-container {
   position: relative;
   width: 100%;
   height: 100%;
@@ -56,21 +56,21 @@ $lighterBlue: #409EFF;
   position: absolute;
   left: 0;
   top: 0;
-  height: 100vh;
+  height: 100%;
 }
 .left-scrollbar{
-  height: calc(100vh - 42px);
+  height: calc(100% - 42px);
   overflow: hidden;
 }
 .center-scrollbar {
-  height: calc(100vh - 42px);
+  height: calc(100% - 42px);
   overflow: hidden;
   border-left: 1px solid #f1e8e8;
   border-right: 1px solid #f1e8e8;
   box-sizing: border-box;
 }
 .center-board {
-  height: 100vh;
+  height: 100%;
   width: auto;
   margin: 0 350px 0 260px;
   box-sizing: border-box;
@@ -134,7 +134,7 @@ $lighterBlue: #409EFF;
   box-sizing: border-box;
   & > .el-form {
     // 69 = 12+15+42
-    height: calc(100vh - 69px);
+    height: calc(100% - 69px);
   }
 }
 .drawing-board {

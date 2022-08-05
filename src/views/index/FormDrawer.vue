@@ -32,13 +32,19 @@
                 </span>
               </el-tab-pane>
             </el-tabs>
-            <div v-show="activeTab==='html'" id="editorHtml" class="tab-editor" />
-            <div v-show="activeTab==='js'" id="editorJs" class="tab-editor" />
-            <div v-show="activeTab==='css'" id="editorCss" class="tab-editor" />
+            <div v-show="activeTab==='html'" id="editorHtml" class="tab-editor">
+              <pre contenteditable="true">{{ htmlCode }}</pre>
+            </div>
+            <div v-show="activeTab==='js'" id="editorJs" class="tab-editor">
+              <pre contenteditable="true">{{ jsCode }}</pre>
+            </div>
+            <div v-show="activeTab==='css'" id="editorCss" class="tab-editor">
+              <pre contenteditable="true">{{ cssCode }}</pre>
+            </div>
           </el-col>
           <el-col :md="24" :lg="12" class="right-preview">
             <div class="action-bar" :style="{'text-align': 'left'}">
-              <span class="bar-btn" @click="runCode">
+              <span class="bar-btn" @click="updateCode">
                 <i class="el-icon-refresh" />
                 刷新
               </span>
@@ -55,14 +61,11 @@
                 关闭
               </span>
             </div>
-            <iframe
+            <div
               v-show="isIframeLoaded"
-              ref="previewPage"
-              class="result-wrapper"
-              frameborder="0"
-              src="preview.html"
-              @load="iframeLoad"
-            />
+              class="result-wrapper">
+              <div id="previewWrapper"></div>
+            </div>
             <div v-show="!isIframeLoaded" v-loading="true" class="result-wrapper" />
           </el-col>
         </el-row>
@@ -86,7 +89,7 @@ import { makeUpJs } from '@/components/generator/js'
 import { makeUpCss } from '@/components/generator/css'
 import { exportDefault, beautifierConf, titleCase } from '@/utils/index'
 import ResourceDialog from './ResourceDialog'
-import loadMonaco from '@/utils/loadMonaco'
+// import loadMonaco from '@/utils/loadMonaco'
 import loadBeautifier from '@/utils/loadBeautifier'
 
 const editorObj = {
@@ -101,6 +104,11 @@ const mode = {
 }
 let beautifier
 let monaco
+
+const childAttrs = {
+  file: '',
+  dialog: ' width="600px" class="dialog-width" v-if="visible" :visible.sync="visible" :modal-append-to-body="false" '
+}
 
 export default {
   components: { ResourceDialog },
@@ -118,7 +126,8 @@ export default {
       resourceVisible: false,
       scripts: [],
       links: [],
-      monaco: null
+      monaco: null,
+      preComp: null
     }
   },
   computed: {
@@ -161,23 +170,56 @@ export default {
       this.jsCode = makeUpJs(this.formData, type)
       this.cssCode = makeUpCss(this.formData)
 
+
       loadBeautifier(btf => {
         beautifier = btf
         this.htmlCode = beautifier.html(this.htmlCode, beautifierConf.html)
         this.jsCode = beautifier.js(this.jsCode, beautifierConf.js)
         this.cssCode = beautifier.css(this.cssCode, beautifierConf.html)
-
-        loadMonaco(val => {
-          monaco = val
-          this.setEditorValue('editorHtml', 'html', this.htmlCode)
-          this.setEditorValue('editorJs', 'js', this.jsCode)
-          this.setEditorValue('editorCss', 'css', this.cssCode)
-          if (!this.isInitcode) {
-            this.isRefreshCode = true
-            this.isIframeLoaded && (this.isInitcode = true) && this.runCode()
-          }
-        })
+        this.isIframeLoaded = true
+        this.renderVue()
       })
+    },
+    renderVue() {
+      if (this.preComp) {
+        this.preComp.$destroy()
+      }
+      const { type } = this.generateConf
+      let attrs = childAttrs[type]
+      let main = this.jsCode.replace('export default ', '')
+      let html = this.htmlCode
+      let css = this.cssCode
+      let cssStyle = document.querySelector('.preStyle')
+      if (!cssStyle) {
+        cssStyle = document.createElement('style')
+        cssStyle.className = 'preStyle'
+        cssStyle.type = 'text/css'
+        cssStyle.rel = 'stylesheet'
+        document.head.appendChild(cssStyle)
+      }
+      cssStyle.appendChild(document.createTextNode(css))
+      main = eval(`(${main})`)
+      main.template = `<div>${html}</div>`
+      const comp = window.vues.extend({
+        components: {
+          child: main
+        },
+        data() {
+          return {
+            visible: true
+          }
+        },
+        template: `<div><child ${attrs}/></div>`
+      })
+      this.preComp = new comp().$mount()
+      document.getElementById('previewWrapper').innerHTML = ''
+      document.getElementById('previewWrapper').appendChild(this.preComp.$el)
+    },
+    updateCode() {
+      this.jsCode = document.querySelector('#editorJs pre').innerText
+      this.htmlCode = document.querySelector('#editorHtml pre').innerText
+      this.cssCode = document.querySelector('#editorCss pre').innerText
+      this.renderVue()
     },
     onClose() {
       this.isInitcode = false
@@ -234,7 +276,6 @@ export default {
               links: this.links
             }
           }
-
           this.$refs.previewPage.contentWindow.postMessage(
             postData,
             location.origin
@@ -248,9 +289,9 @@ export default {
       }
     },
     generateCode() {
-      const html = vueTemplate(editorObj.html.getValue())
-      const script = vueScript(editorObj.js.getValue())
-      const css = cssStyle(editorObj.css.getValue())
+      const html = vueTemplate(this.htmlCode)
+      const script = vueScript(this.jsCode)
+      const css = cssStyle(this.cssCode)
       return beautifier.html(html + script + css, beautifierConf.html)
     },
     exportFile() {
@@ -299,6 +340,13 @@ export default {
   left: 0;
   right: 0;
   font-size: 14px;
+  overflow: auto;
+  pre {
+    color: #fff;
+    padding: 0 10px;
+    min-height: 100px;
+    margin: 20px 0;
+  }
 }
 .left-editor {
   position: relative;

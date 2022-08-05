@@ -1,5 +1,5 @@
 import loadScript from './loadScript'
-import ELEMENT from 'element-ui'
+// import ELEMENT from 'element-ui'
 import pluginsConfig from './pluginsConfig'
 
 // monaco-editor单例
@@ -18,13 +18,13 @@ export default function loadMonaco(cb) {
   const { monacoEditorUrl: vs } = pluginsConfig
 
   // 使用element ui实现加载提示
-  const loading = ELEMENT.Loading.service({
-    fullscreen: true,
-    lock: true,
-    text: '编辑器资源初始化中...',
-    spinner: 'el-icon-loading',
-    background: 'rgba(255, 255, 255, 0.5)'
-  })
+  // const loading = ELEMENT.Loading.service({
+  //   fullscreen: true,
+  //   lock: true,
+  //   text: '编辑器资源初始化中...',
+  //   spinner: 'el-icon-loading',
+  //   background: 'rgba(255, 255, 255, 0.5)'
+  // })
 
   !window.require && (window.require = {})
   !window.require.paths && (window.require.paths = {})
@@ -32,7 +32,7 @@ export default function loadMonaco(cb) {
 
   loadScript(`${vs}/loader.js`, () => {
     window.require(['vs/editor/editor.main'], () => {
-      loading.close()
+      // loading.close()
       monacoEidtor = window.monaco
       cb(monacoEidtor)
     })

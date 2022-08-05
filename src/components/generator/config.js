@@ -127,26 +127,26 @@ export const inputComponents = [
     precision: undefined,
     'controls-position': '',
     disabled: false
-  },
-  {
-    __config__: {
-      label: '编辑器',
-      showLabel: true,
-      changeTag: true,
-      labelWidth: null,
-      tag: 'tinymce',
-      tagIcon: 'rich-text',
-      defaultValue: null,
-      span: 24,
-      layout: 'colFormItem',
-      required: true,
-      regList: [],
-      document: 'http://tinymce.ax-z.cn'
-    },
-    placeholder: '请输入',
-    height: 300, // 编辑器高度
-    branding: false // 隐藏右下角品牌烙印
   }
+  // {
+  //   __config__: {
+  //     label: '编辑器',
+  //     showLabel: true,
+  //     changeTag: true,
+  //     labelWidth: null,
+  //     tag: 'tinymce',
+  //     tagIcon: 'rich-text',
+  //     defaultValue: null,
+  //     span: 24,
+  //     layout: 'colFormItem',
+  //     required: true,
+  //     regList: [],
+  //     document: 'http://tinymce.ax-z.cn'
+  //   },
+  //   placeholder: '请输入',
+  //   height: 300, // 编辑器高度
+  //   branding: false // 隐藏右下角品牌烙印
+  // }
 ]
 
 // 选择型组件 【左面板】

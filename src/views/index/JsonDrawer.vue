@@ -19,7 +19,11 @@
           关闭
         </span>
       </div>
-      <div id="editorJson" class="json-editor" />
+      <div id="editorJson" class="json-editor">
+        <pre v-html="syntaxHighlight(jsonStr)">
+          <!-- <code>{{ jsonStr }}</code> -->
+        </pre>
+      </div>
     </el-drawer>
   </div>
 </template>
@@ -28,8 +32,8 @@
 import { beautifierConf } from '@/utils/index'
 import ClipboardJS from 'clipboard'
 import { saveAs } from 'file-saver'
-import loadMonaco from '@/utils/loadMonaco'
-import loadBeautifier from '@/utils/loadBeautifier'
+// import loadMonaco from '@/utils/loadMonaco'
+// import loadBeautifier from '@/utils/loadBeautifier'
 
 let beautifier
 let monaco
@@ -57,7 +61,7 @@ export default {
           message: '代码已复制到剪切板，可粘贴。',
           type: 'success'
         })
-        return this.beautifierJson
+        return this.jsonStr
       }
     })
     clipboard.on('error', e => {
@@ -74,14 +78,26 @@ export default {
       }
     },
     onOpen() {
-      loadBeautifier(btf => {
-        beautifier = btf
-        this.beautifierJson = beautifier.js(this.jsonStr, beautifierConf.js)
-
-        loadMonaco(val => {
-          monaco = val
-          this.setEditorValue('editorJson', this.beautifierJson)
-        })
+    },
+    syntaxHighlight(json) {
+      if (typeof json !== 'string') {
+        json = JSON.stringify(json, undefined, 2)
+      }
+      json = json.replace(/&/g, '&').replace(/</g, '<').replace(/>/g, '>')
+      return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|\-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, match => {
+        let cls = 'number'
+        if (/^"/.test(match)) {
+          if (/:$/.test(match)) {
+            cls = 'key'
+          } else {
+            cls = 'string'
+          }
+        } else if (/true|false/.test(match)) {
+          cls = 'boolean'
+        } else if (/null/.test(match)) {
+          cls = 'null'
+        }
+        return '<span class="' + cls + '">' + match + '</span>'
       })
     },
     onClose() {},
@@ -110,14 +126,14 @@ export default {
         inputPlaceholder: '请输入文件名'
       }).then(({ value }) => {
         if (!value) value = `${+new Date()}.json`
-        const codeStr = this.jsonEditor.getValue()
+        const codeStr = this.jsonStr
         const blob = new Blob([codeStr], { type: 'text/plain;charset=utf-8' })
         saveAs(blob, value)
       })
     },
     refresh() {
       try {
-        this.$emit('refresh', JSON.parse(this.jsonEditor.getValue()))
+        this.$emit('refresh', JSON.parse(this.jsonStr))
       } catch (error) {
         this.$notify({
           title: '错误',
@@ -139,6 +155,25 @@ export default {
 @include action-bar;
 
 .json-editor{
-  height: calc(100vh - 33px);
+  height: calc(100% - 33px);
+  overflow: auto;
+}
+</style>
+
+<style lang="scss">
+.json-editor {
+  background-color: #272822;
+  pre {
+    color: #eac72d;
+    .key {
+      color: #6bd9ed;
+    }
+    .string {
+      color: #cfcfc3;
+    }
+    .null, .number, .boolean {
+      color: #ae85fc;
+    }
+  }
 }
 </style>
