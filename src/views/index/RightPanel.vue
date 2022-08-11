@@ -665,6 +665,7 @@ import {
 } from '@/components/generator/config'
 import { saveFormConf } from '@/utils/db'
 import SvgIcon from '@/components/SvgIcon'
+import draggable from 'vuedraggable'
 
 const dateTimeFormat = {
   date: 'yyyy-MM-dd',
@@ -683,6 +684,7 @@ const needRerenderList = ['tinymce']
 export default {
   components: {
     SvgIcon,
+    draggable,
     TreeNodeDialog,
     IconsDialog
   },

@@ -152,6 +152,7 @@ import {
 } from '@/utils/db'
 import loadBeautifier from '@/utils/loadBeautifier'
 import SvgIcon from '@/components/SvgIcon'
+import axios from 'axios'
 
 const req = require.context('@/icons/svg', false, /\.svg$/)
 const requireAll = requireContext => requireContext.keys().map(requireContext)
@@ -304,7 +305,7 @@ export default {
       const { dataType, method, url } = component.__config__
       if (dataType === 'dynamic' && method && url) {
         this.setLoading(component, true)
-        this.$axios({
+        axios({
           method,
           url
         }).then(resp => {

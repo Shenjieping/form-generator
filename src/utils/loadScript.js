@@ -1,4 +1,6 @@
-const callbacks = {}
+const callbacks = {
+  src: []
+}
 
 /**
  * 加载一个远程脚本
@@ -19,7 +21,7 @@ function loadScript(src, callback) {
     onEnd($script)
   }
 
-  callbacks[src].push(cb)
+  callbacks[src] && callbacks[src].push(cb)
 
   function stdOnEnd(script) {
     script.onload = () => {
